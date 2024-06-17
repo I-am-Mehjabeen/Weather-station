@@ -1,0 +1,18 @@
+&i2c0 {
+    status ="ok";
+    clock-frequency = <I2C_BITRATE_FAST>;
+    bmp180@77 {
+		status = "okay";
+		compatible = "bosch,bmp180";
+		reg = <0x77>;
+		model = "bmp180";
+
+	};
+
+};
+
+
+&uart0 {
+	status = "okay";
+	hw-flow-control;
+};

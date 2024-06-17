@@ -1,0 +1,5 @@
+config BMP180
+	bool "Bosch BMP180"
+	depends on I2C
+	help
+	  Enable driver for BMP180 sensor.

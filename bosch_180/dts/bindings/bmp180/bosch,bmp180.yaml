@@ -1,0 +1,15 @@
+
+description: Bosch Barometer
+
+compatible: "bosch,bmp180"
+
+include: i2c-device.yaml
+
+properties:
+  model:
+    type: string
+    required: true
+    description: |
+      The sensor model in use
+    enum:
+        - "bmp180"

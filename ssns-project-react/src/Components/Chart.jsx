@@ -15,6 +15,9 @@ import {
 import { Line } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
 import { color } from 'chart.js/helpers';
+import { useEffect, useState } from 'react';
+import { db } from "./db";
+import { onValue, ref } from "firebase/database";
 
 ChartJS.register(
   CategoryScale,
@@ -47,13 +50,13 @@ export const options = {
   scales: {
     y: {
       display: true,
-      min: 20,
+      min: 0,
       max: 30,
       grid: {
         display: false,
       },
       ticks: {
-        stepSize: 5,
+        stepSize: 10,
         color: "white",
       },
     },
@@ -68,47 +71,46 @@ export const options = {
     },
   },
 
-  // scales: {
-  //   y: {
-  //     min: 20,
-  //     max: 30,
-  //     grid: {
-  //       color: "white"
-  //     },
-  //     ticks: {
-  //       stepSize: 10,
-  //       color: "white"
-  //     },
-  //   },
-  //   x: {
-  //     grid: {
-  //       color: "white"
-  //     },
-  //     ticks: {
-  //       color: "white"
-  //     }
-  //   }
-  // }
+
   
 };
 
-const labels = ['0:00', '3:00', '6:00', '9:00', '12:00', '15:00', '18:00', '21:00'];
 
-export const data = {
-  labels,
-  datasets: [
-    {
-      fill: true,
-      label: 'Temperature (°C)',
-      fontColor: "white",
-      data: labels.map(() => faker.datatype.number({ min: 21, max: 28 })),
-      borderColor: '#ffc721',
-      backgroundColor: '#ffe86d50',
-    },
-  ],
- 
-};
+
 
 export function Chart() {
+ 
+  const [hourlyRecords, sethourlyRecords] = useState([]);
+
+    useEffect(() => {
+        const hourlyRef = ref(db, 'weather_station/hourly_weather_records');
+
+        onValue(hourlyRef, (snapshot) => {
+          const data = snapshot.val();
+          const records = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+          sethourlyRecords(records);
+        });
+      }, []);
+
+      const startHour = hourlyRecords.length > 0 ? hourlyRecords[0].hour : null;
+
+const labels = startHour !== null
+  ? Array.from({ length: 24 }, (_, i) => `${(startHour + i) % 24}:00`)
+  : Array.from({ length: 24 }, (_, i) => `${i}:00`);
+
+      const data = {
+        labels,
+        datasets: [
+          {
+            fill: true,
+            label: 'Temperature (°C)',
+            fontColor: "white",
+            data: hourlyRecords.map(record => parseFloat(record.temperature.toFixed(2))),
+            borderColor: '#ffc721',
+            backgroundColor: '#ffe86d50',
+          },
+        ],
+       
+      };
   return <Line options={options} data={data} />;
 }

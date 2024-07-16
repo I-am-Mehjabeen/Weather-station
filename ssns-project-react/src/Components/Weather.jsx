@@ -49,11 +49,11 @@ const Weather = () => {
                             {/* <div className="col">Rain map</div> */}
                         </div>
                         <div className="row">
-                            <div className="col-lg-7 temp">{currentWeather?.temperature ? `${currentWeather.temperature.toFixed(2)}` : '...'}<span className='error-span'> ± 0.50</span>°C</div>
+                            <div className="col-lg-7 temp">{currentWeather?.temperature ? `${currentWeather.temperature.toFixed(2)}` : '...'}<span className='error-span'> ± 1.04</span>°C</div>
                             <div className="col-lg-5 time">
-                                <p className='d-flex align-items-center justify-content-center'><div className='icon-img-container'><img src='./images/humidity.png'/></div><div className='img-txt text-left'>Humidity</div><div className='icon-value-container'>  {currentWeather?.humidity ? `${currentWeather.humidity}%` : 'Loading Humidity...'}</div></p>
-                                <p className='d-flex align-items-center justify-content-center'> <div className='icon-img-container'><img src='./images/air-quality.png'/> </div><div className='img-txt text-left'>Air Quality</div><div className='icon-value-container'> {currentWeather?.aqi ? `${currentWeather.aqi} AQI` : 'Loading AQI...'}</div></p>
-                                <p className='d-flex align-items-center justify-content-center'> <div className='icon-img-container'><img src='./images/gauge.png'/> </div><div className='img-txt text-left'>Pressure</div><div className='icon-value-container'> {currentWeather?.pressure ? `${currentWeather.pressure} kPa` : 'Loading Pressure...'}</div></p>
+                                <p className='d-flex align-items-center justify-content-center'><div className='icon-img-container'><img src='./images/humidity.png'/></div><div className='img-txt text-left'>Humidity</div><div className='icon-value-container'>  {currentWeather?.humidity ? `${currentWeather.humidity}` : 'Loading Humidity...'}<span className='error-span'> ± 2.00</span> %</div></p>
+                                <p className='d-flex align-items-center justify-content-center'> <div className='icon-img-container'><img src='./images/air-quality.png'/> </div><div className='img-txt text-left'>Air Quality</div><div className='icon-value-container'> {currentWeather?.aqi ? `${currentWeather.aqi}` : 'Loading AQI...'} AQI</div></p>
+                                <p className='d-flex align-items-center justify-content-center'> <div className='icon-img-container'><img src='./images/gauge.png'/> </div><div className='img-txt text-left'>Pressure</div><div className='icon-value-container'> {currentWeather?.pressure ? `${currentWeather.pressure}` : 'Loading Pressure...'}<span className='error-span'> ± 0.012</span> kPa</div></p>
                             </div>
                         </div>
                         <div className="row bottom">

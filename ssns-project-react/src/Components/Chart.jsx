@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,13 +9,8 @@ import {
   Tooltip,
   Filler,
   Legend,
-  scales,
-  Ticks,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
-import { color } from 'chart.js/helpers';
-import { useEffect, useState } from 'react';
 import { db } from "./db";
 import { onValue, ref } from "firebase/database";
 
@@ -30,33 +25,80 @@ ChartJS.register(
   Legend
 );
 
+const errorBarPlugin = {
+  id: 'errorBarPlugin',
+  afterDatasetsDraw: (chart, args, options) => {
+    const { ctx, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      const errorBars = dataset.errorBars;
+
+      if (errorBars) {
+        ctx.save();
+        ctx.strokeStyle = options.color || '#ff0000';
+        ctx.lineWidth = options.lineWidth || 1.5;
+
+        dataset.data.forEach((value, index) => {
+          const xPos = x.getPixelForValue(index);
+          const yPos = y.getPixelForValue(value);
+          const yErrorTop = y.getPixelForValue(value + errorBars[index].plus);
+          const yErrorBottom = y.getPixelForValue(value - errorBars[index].minus);
+
+      
+          ctx.beginPath();
+          ctx.moveTo(xPos, yErrorTop);
+          ctx.lineTo(xPos, yErrorBottom);
+          ctx.stroke();
+
+          
+          ctx.beginPath();
+          ctx.moveTo(xPos - 3, yErrorTop);
+          ctx.lineTo(xPos + 3, yErrorTop);
+          ctx.stroke();
+
+         
+          ctx.beginPath();
+          ctx.moveTo(xPos - 3, yErrorBottom);
+          ctx.lineTo(xPos + 3, yErrorBottom);
+          ctx.stroke();
+        });
+
+        ctx.restore();
+      }
+    });
+  },
+};
+
 export const options = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
       position: 'top',
-        labels: {
-            color: "white",
-        
-        }
+      labels: {
+        color: "white",
+      },
     },
     title: {
       display: true,
       text: 'Weather Chart',
-       color:"white"
+      color: "white",
+    },
+    errorBarPlugin: {
+      color: 'white', 
+      lineWidth: 1.0,   
     },
   },
   scales: {
     y: {
       display: true,
-      min: 0,
-      max: 30,
+      min: 10,
+      max: 25,
       grid: {
         display: false,
       },
       ticks: {
-        stepSize: 10,
+        stepSize: 5,
         color: "white",
       },
     },
@@ -70,47 +112,43 @@ export const options = {
       },
     },
   },
-
-
-  
 };
 
-
-
+ChartJS.register(errorBarPlugin);
 
 export function Chart() {
- 
-  const [hourlyRecords, sethourlyRecords] = useState([]);
+  const [hourlyRecords, setHourlyRecords] = useState([]);
 
-    useEffect(() => {
-        const hourlyRef = ref(db, 'weather_station/hourly_weather_records');
+  useEffect(() => {
+    const hourlyRef = ref(db, 'weather_station/hourly_weather_records');
+    onValue(hourlyRef, (snapshot) => {
+      const data = snapshot.val();
+      const records = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      setHourlyRecords(records);
+    });
+  }, []);
 
-        onValue(hourlyRef, (snapshot) => {
-          const data = snapshot.val();
-          const records = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-          sethourlyRecords(records);
-        });
-      }, []);
+  const startHour = hourlyRecords.length > 0 ? hourlyRecords[0].hour : null;
+  const labels = startHour !== null
+    ? Array.from({ length: 24 }, (_, i) => `${(startHour + i) % 24}:00`)
+    : Array.from({ length: 24 }, (_, i) => `${i}:00`);
 
-      const startHour = hourlyRecords.length > 0 ? hourlyRecords[0].hour : null;
+  const temperatureData = hourlyRecords.map(record => parseFloat(record.temperature.toFixed(2)));
 
-const labels = startHour !== null
-  ? Array.from({ length: 24 }, (_, i) => `${(startHour + i) % 24}:00`)
-  : Array.from({ length: 24 }, (_, i) => `${i}:00`);
+  const data = {
+    labels,
+    datasets: [
+      {
+        fill: true,
+        label: 'Temperature (°C)',
+        fontColor: "white",
+        data: temperatureData,
+        borderColor: '#ffc721',
+        backgroundColor: '#ffe86d50',
+        errorBars: temperatureData.map(() => ({ plus: 1.04, minus: 1.04 })),
+      },
+    ],
+  };
 
-      const data = {
-        labels,
-        datasets: [
-          {
-            fill: true,
-            label: 'Temperature (°C)',
-            fontColor: "white",
-            data: hourlyRecords.map(record => parseFloat(record.temperature.toFixed(2))),
-            borderColor: '#ffc721',
-            backgroundColor: '#ffe86d50',
-          },
-        ],
-       
-      };
   return <Line options={options} data={data} />;
 }

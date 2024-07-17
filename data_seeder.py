@@ -3,19 +3,19 @@ from datetime import datetime, timedelta
 import random
 
 # Start and end datetime for the records
-start_datetime = datetime(2024, 7, 6, 0, 0, 0)
-end_datetime = datetime(2024, 7, 6, 12, 0, 0)
+start_datetime = datetime(2024, 7, 11, 3, 0, 0)
+end_datetime = datetime(2024, 7, 11, 11, 0, 0)
 
 # Define the range for each column
 ranges = {
-    'TempC': (16, 28),
-    'Rel_Hum': (40, 90),
-    'PresskPa': (100.80, 101.80),
-    'PM1_0': (0.01, 0.99),
-    'PM2_5': (0.99, 2.90),
-    'PM4': (0.11, 3.99),
-    'PM10': (0.20, 9.9),
-    'AQI': (21, 25)
+    'TempC': (22, 23),
+    'Rel_Hum': (75, 81),
+    'PresskPa': (101.30, 101.31),
+    'PM1_0': (9.0, 45.0),
+    'PM2_5': (5.0, 49.0),
+    'PM4': (6.0, 49.0),
+    'PM10': (5.0, 49.0),
+    'AQI': (20, 100)
 }
 
 # Function to generate a random datetime between start and end

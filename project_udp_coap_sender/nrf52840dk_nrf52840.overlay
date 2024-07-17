@@ -10,26 +10,49 @@
 
 // For more help, browse the DeviceTree documentation at https://docs.zephyrproject.org/latest/guides/dts/index.html
 // You can also visit the nRF DeviceTree extension documentation at https://nrfconnect.github.io/vscode-nrf-connect/devicetree/nrfdevicetree.html
-/ {
-    chosen {
-    zephyr,entropy = &rng;
-    };
+&i2c1 {
+    status ="okay";
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+    bmp180@77 {
+		status = "okay";
+		compatible = "bosch,bmp180";
+		reg = <0x77>;
+		model = "bmp180";
+	};
+
 };
 
-&i2c0 {
-    clock-frequency = <I2C_BITRATE_STANDARD>;
-    mcp9808@18 {
-        compatible = "microchip,mcp9808";
-        reg = <0x18>;
-    };
+&uart0 {
+	status = "okay";
+	hw-flow-control;
 };
 
 &pinctrl {
-    i2c0_default: i2c0_default {
+    i2c1_default: i2c1_default {
 		group1 {
-			psels = <NRF_PSEL(TWIM_SDA, 0, 26)>,
-				<NRF_PSEL(TWIM_SCL, 0, 27)>;
+			psels = <NRF_PSEL(TWIM_SDA, 0, 30)>,
+				<NRF_PSEL(TWIM_SCL, 0, 31)>;
             bias-pull-up;
 		};
 	};
+};
+&i2c0 { 
+    
+    status = "okay";
+	sht3xd@44 {
+		compatible = "sensirion,sht3xd";
+		reg = <0x44>;
+		alert-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+
+&arduino_adc {
+    io-channel-map = <0 &adc 1>, <1 &adc 2>, <2 &adc 4>, <3 &adc 5>, <4 &adc 6>, <5 &adc 7>;
+};
+
+&i2c0_default {
+    group1 {
+        psels = <NRF_PSEL(TWIM_SDA, 0, 29)>, <NRF_PSEL(TWIM_SCL, 0, 28)>;
+    };
 };

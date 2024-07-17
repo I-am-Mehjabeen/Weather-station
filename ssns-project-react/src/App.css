@@ -89,7 +89,7 @@
 .weather-container .temp{
   padding: 8vh;
   text-align: center;
-  font-size: 18vh;
+  font-size: 16vh;
   font-weight: bold;
 }
 @media(max-width:768px)
@@ -117,7 +117,7 @@
 }
 .weather-container .time{
   align-self: center;
-  font-size: 0.8rem;
+  font-size: 1.3rem;
 }
 @media(max-width:768px)
 {
@@ -184,4 +184,32 @@
 .chart-row .col-12{
   position: relative;
   height: 200px;
+}
+.error-span{
+  font-size: 16px;
+  color: rgb(235, 235, 235);
+  font-weight: 400;
+}
+.time .error-span{
+  font-size: 12px;
+  color: rgb(224, 224, 224);
+  font-weight: 400;
+}
+.top h2{
+  font-weight: bold;
+}
+.time img{
+  width: 30px;
+  margin-right: 20px;
+  /* padding: 10px ; */
+}
+.icon-img-container{
+  width: 60px;
+}
+.icon-value-container{
+  width: 150px;
+  padding-top: 5px;}
+
+.img-txt{
+  width: 150px;
 }
